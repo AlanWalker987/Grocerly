@@ -44,6 +44,7 @@ function CustomDialog({
 }) {
   const [error, setError] = useState("");
   const add = useGroceries((s) => s.addCustom);
+
   return (
     <Dialog title="Add Custom Item" close={close}>
       <form
@@ -53,12 +54,14 @@ function CustomDialog({
           const data = new FormData(e.currentTarget);
           const unit = String(data.get("unit")) as GroceryUnit;
           const qty = Number(data.get("quantity"));
+
           if (!validQuantity(qty, unit)) {
             setError(
               "Enter a positive quantity. Countable units need a whole number.",
             );
             return;
           }
+
           try {
             const item = add(
               String(data.get("name")),
@@ -136,6 +139,7 @@ function GroceryCard({ item }: { item: GroceryItem }) {
     row
       ? useGroceries.getState().remove(item.id)
       : useGroceries.getState().select(item);
+
   return (
     <article className={"card" + (row ? " chosen" : "")}>
       <Checkbox
@@ -169,6 +173,7 @@ function GroceryCard({ item }: { item: GroceryItem }) {
           <Icon name="trash" />
         </Button>
       )}
+
       {confirmDelete && (
         <Dialog
           title="Delete custom item?"
@@ -222,6 +227,7 @@ export function Catalog({
       ? item.name.toLowerCase().includes(search)
       : item.categoryId === category.id,
   );
+
   return (
     <>
       <section className="hero">
@@ -233,6 +239,7 @@ export function Catalog({
           <p>Pick your essentials and build your shopping list.</p>
         </div>
       </section>
+
       <div className="catalog-layout">
         <aside className="sidebar">
           <h2>
@@ -260,6 +267,7 @@ export function Catalog({
             })}
           </nav>
         </aside>
+
         <section className="catalog-products">
           <div className="section-heading">
             <div>
@@ -300,6 +308,7 @@ export function Catalog({
           )}
         </section>
       </div>
+
       <div className="summary">
         <div className="summary-inner">
           <span>
@@ -315,6 +324,7 @@ export function Catalog({
           </Button>
         </div>
       </div>
+
       {dialog && (
         <CustomDialog
           categoryId={categoryId}
