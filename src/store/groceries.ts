@@ -4,11 +4,14 @@ import type { GroceryItem, GroceryUnit, SelectedGrocery } from '../data/grocerie
 
 type Selections = Record<string, SelectedGrocery>
 interface Basket {
+  userName: string
   selected: Selections
   custom: GroceryItem[]
 }
 interface Store extends Basket {
   storageError: boolean
+  setUserName: (name: string) => void
+  deleteCustom: (id: string) => void
   select: (item: GroceryItem) => void
   remove: (id: string) => void
   edit: (item: GroceryItem, quantity: number, unit: GroceryUnit) => void
@@ -18,7 +21,7 @@ interface Store extends Basket {
 }
 const key = 'grocerly.basket.v1'
 const previousFishIds = new Set(['rohu', 'pomfret', 'sardines', 'surmai'])
-const empty = (): Basket => ({ selected: {}, custom: [] })
+const empty = (): Basket => ({ userName: '', selected: {}, custom: [] })
 const isRecord = (value: unknown): value is Record<string, unknown> => typeof value === 'object' && value !== null
 const isUnit = (value: unknown): value is GroceryUnit => units.some(unit => unit === value)
 const knownCategory = (id: unknown) => categories.some(category => category.id === id)
@@ -28,6 +31,7 @@ function restore(raw: string | null): Basket {
   if (!raw) return basket
   const data: unknown = JSON.parse(raw)
   if (!isRecord(data) || data.version !== 1) return basket
+  if (typeof data.userName === 'string') basket.userName = cleanName(data.userName)
   const catalog = new Map(groceryItems.map(item => [item.id, item]))
   const names = new Set(groceryItems.map(item => item.name.toLowerCase()))
   for (const entry of Array.isArray(data.custom) ? data.custom as unknown[] : []) {
@@ -74,14 +78,25 @@ function selection(item: GroceryItem): SelectedGrocery {
 
 export const useGroceries = create<Store>((set, get) => {
   function save(changes: Partial<Basket>) {
-    const { custom, selected } = { ...get(), ...changes }
+    const { userName, custom, selected } = { ...get(), ...changes }
     let storageError = false
-    try { localStorage.setItem(key, JSON.stringify({ version: 1, custom, selected })) }
+    try { localStorage.setItem(key, JSON.stringify({ version: 1, userName, custom, selected })) }
     catch { storageError = true }
-    set({ custom, selected, storageError })
+    set({ userName, custom, selected, storageError })
   }
   return {
     ...initialState(),
+    setUserName(rawName) {
+      const userName = cleanName(rawName)
+      if (userName) save({ userName })
+    },
+    deleteCustom(id) {
+      const { custom, selected } = get()
+      if (!custom.some(item => item.id === id)) return
+      const nextSelected = { ...selected }
+      delete nextSelected[id]
+      save({ custom: custom.filter(item => item.id !== id), selected: nextSelected })
+    },
     select(item) {
       if (!get().selected[item.id]) save({ selected: { ...get().selected, [item.id]: selection(item) } })
     },

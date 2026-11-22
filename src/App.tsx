@@ -3,6 +3,7 @@ import { Input } from '@/components/ui/input'
 import { Catalog } from './components/Catalog'
 import { Icon } from './components/Controls'
 import { ShoppingList } from './components/ShoppingList'
+import { Welcome } from './components/Welcome'
 import { groceryItems } from './data/groceries'
 import { useGroceries } from './store/groceries'
 
@@ -14,6 +15,7 @@ export default function App() {
   const [query, setQuery] = useState('')
   const searchRef = useRef<HTMLInputElement>(null)
   const custom = useGroceries(s => s.custom)
+  const userName = useGroceries(s => s.userName)
   const count = useGroceries(s => Object.keys(s.selected).length)
   const storageError = useGroceries(s => s.storageError)
   const items = useMemo(() => [...groceryItems, ...custom], [custom])
@@ -37,6 +39,12 @@ export default function App() {
       window.removeEventListener('keydown', focusSearch)
     }
   }, [])
+  if (!userName) return <Welcome onContinue={name => {
+    window.history.replaceState(null, '', '#/')
+    setList(false)
+    useGroceries.getState().setUserName(name)
+    requestAnimationFrame(() => document.getElementById('main')?.focus())
+  }} />
   return <>
     <a className="skip" href="#main" onClick={e => { e.preventDefault(); document.getElementById('main')?.focus() }}>Skip to content</a>
     <header><div className="topbar">
@@ -50,7 +58,7 @@ export default function App() {
     </div></header>
     <main id="main" tabIndex={-1} className="shell">
       {storageError && <p role="status" className="storage-warning">Browser storage is unavailable. Your changes last for this session.</p>}
-      {list ? <ShoppingList items={items}/> : <Catalog items={items} categoryId={category} choose={id => { setCategory(id); setQuery('') }} query={query} count={count}/>}
+      {list ? <ShoppingList items={items}/> : <Catalog userName={userName} items={items} categoryId={category} choose={id => { setCategory(id); setQuery('') }} query={query} count={count}/>}
     </main>
   </>
 }
