@@ -37,6 +37,7 @@ export const categories = [
   { id: "meat", name: "Meat & Seafood", icon: "🐟" },
   { id: "snacks", name: "Snacks & Beverages", icon: "☕" },
   { id: "household", name: "Household Essentials", icon: "🧴" },
+  { id: "pooja", name: "Pooja Essentials", icon: "🪔" },
 ];
 
 function batch(
@@ -164,6 +165,13 @@ export const groceryItems: GroceryItem[] = [
     "packets",
   ),
   ...batch("household", ["Bath Soap"], 1, "pcs", "packets"),
+  ...batch("household", ["Toothpaste"], 1, "pcs", "g"),
+  ...batch("household", ["Shampoo"], 1, "pcs", "ml", "L"),
+  ...batch("household", ["Mosquito Refill"], 1, "pcs", "packets"),
+  ...batch("pooja", ["Incense Sticks", "Cotton Wicks"], 1, "packets", "pcs"),
+  ...batch("pooja", ["Brass Diya"], 1, "pcs"),
+  ...batch("pooja", ["Kumkum"], 1, "packets", "g"),
+  ...batch("pooja", ["Pooja Flowers"], 1, "packets", "g", "kg"),
 ];
 
 export function validQuantity(value: number, unit: GroceryUnit) {

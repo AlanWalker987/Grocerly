@@ -10,6 +10,7 @@ import {
   SprayCan,
   Wheat,
   Flame,
+  Flower2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -31,6 +32,7 @@ const categoryIcons = {
   meat: Fish,
   snacks: CupSoda,
   household: SprayCan,
+  pooja: Flower2,
 };
 
 function CustomDialog({

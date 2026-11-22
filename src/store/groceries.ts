@@ -57,7 +57,8 @@ function restore(raw: string | null): Basket {
     basket.userName = cleanName(data.userName);
 
   const catalog = new Map(groceryItems.map((item) => [item.id, item]));
-  const names = new Set(groceryItems.map((item) => item.name.toLowerCase()));
+  // A saved custom item may predate a built-in item with the same name.
+  const customNames = new Set<string>();
 
   for (const entry of Array.isArray(data.custom)
     ? (data.custom as unknown[])
@@ -70,7 +71,7 @@ function restore(raw: string | null): Basket {
       catalog.has(id) ||
       typeof name !== "string" ||
       !cleanName(name) ||
-      names.has(cleanName(name).toLowerCase()) ||
+      customNames.has(cleanName(name).toLowerCase()) ||
       typeof categoryId !== "string" ||
       !knownCategory(categoryId) ||
       !isUnit(defaultUnit) ||
@@ -89,7 +90,7 @@ function restore(raw: string | null): Basket {
       isCustom: true,
     };
     catalog.set(id, item);
-    names.add(item.name.toLowerCase());
+    customNames.add(item.name.toLowerCase());
     basket.custom.push(item);
   }
 
