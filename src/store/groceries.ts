@@ -24,6 +24,7 @@ interface Basket {
 interface Store extends Basket {
   storageError: boolean;
   setUserName: (name: string) => void;
+  logout: () => void;
   deleteCustom: (id: string) => void;
   select: (item: GroceryItem) => void;
   remove: (id: string) => void;
@@ -180,6 +181,16 @@ export const useGroceries = create<Store>((set, get) => {
     setUserName(rawName) {
       const userName = cleanName(rawName);
       if (userName) save({ userName });
+    },
+
+    logout() {
+      let storageError = false;
+      try {
+        localStorage.removeItem(key);
+      } catch {
+        storageError = true;
+      }
+      set({ ...empty(), storageError });
     },
 
     deleteCustom(id) {

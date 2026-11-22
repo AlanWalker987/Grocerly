@@ -946,22 +946,19 @@ textarea {
     border-color: #aac7a4;
   }
   .topbar {
-    gap: 14px;
+    gap: 8px 14px;
+    flex-wrap: wrap;
+    padding-block: 10px;
   }
-  .topnav {
-    margin-left: 4px;
-    gap: 12px;
+  .logout-button {
+    margin-left: auto;
+  }
+  .search {
+    order: 1;
+    width: 100%;
   }
   .hero-copy {
     max-width: 66%;
-  }
-}
-
-@media (max-width: 600px) {
-  .topbar {
-    flex-wrap: wrap;
-    padding: 10px 0;
-    row-gap: 8px;
   }
   .brand {
     font-size: 27px;
@@ -976,10 +973,6 @@ textarea {
   }
   .topnav a {
     padding-inline: 8px;
-  }
-  .search {
-    order: 1;
-    width: 100%;
   }
   .basket-link {
     display: none;
@@ -998,6 +991,9 @@ textarea {
   .search kbd {
     display: none;
   }
+}
+
+@media (max-width: 600px) {
   .shell {
     padding-top: 14px;
   }
@@ -1065,6 +1061,28 @@ textarea {
   }
   .stats span {
     font-size: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .topbar {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-areas: "brand logout" "nav search";
+  }
+  .topbar .brand {
+    grid-area: brand;
+  }
+  .logout-button {
+    grid-area: logout;
+    justify-self: end;
+  }
+  .topnav {
+    grid-area: nav;
+    margin-left: 0;
+  }
+  .search {
+    grid-area: search;
   }
 }
 

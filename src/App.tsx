@@ -1,7 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { LogOut } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Catalog } from "./components/Catalog";
-import { Icon } from "./components/Controls";
+import { Dialog, Icon } from "./components/Controls";
 import { ShoppingList } from "./components/ShoppingList";
 import { Welcome } from "./components/Welcome";
 import { groceryItems } from "./data/groceries";
@@ -13,6 +15,7 @@ export default function App() {
   const [list, setList] = useState(isListRoute);
   const [category, setCategory] = useState("vegetables");
   const [query, setQuery] = useState("");
+  const [confirmLogout, setConfirmLogout] = useState(false);
   const searchRef = useRef<HTMLInputElement>(null);
   const custom = useGroceries((s) => s.custom);
   const userName = useGroceries((s) => s.userName);
@@ -54,6 +57,15 @@ export default function App() {
       window.removeEventListener("keydown", focusSearch);
     };
   }, []);
+
+  function logout() {
+    setConfirmLogout(false);
+    useGroceries.getState().logout();
+    window.history.replaceState(null, "", "#/");
+    setList(false);
+    setQuery("");
+    setCategory("vegetables");
+  }
 
   if (!userName)
     return (
@@ -143,6 +155,17 @@ export default function App() {
             <Icon name="basket" />
             <span>{count}</span>
           </a>
+          <Button
+            className="logout-button"
+            variant="outline"
+            aria-label="Log out"
+            title="Log out"
+            aria-haspopup="dialog"
+            onClick={() => setConfirmLogout(true)}
+          >
+            <LogOut aria-hidden="true" />
+            <span>Log out</span>
+          </Button>
         </div>
       </header>
 
@@ -168,6 +191,30 @@ export default function App() {
           />
         )}
       </main>
+
+      {confirmLogout && (
+        <Dialog
+          title="Log out of Grocerly?"
+          close={() => setConfirmLogout(false)}
+        >
+          <p>
+            Logging out will clear your saved name, shopping list, and custom
+            items from this browser.
+          </p>
+          <div className="actions">
+            <Button
+              autoFocus
+              variant="outline"
+              onClick={() => setConfirmLogout(false)}
+            >
+              Keep shopping
+            </Button>
+            <Button variant="destructive" onClick={logout}>
+              Log out
+            </Button>
+          </div>
+        </Dialog>
+      )}
     </>
   );
 }
